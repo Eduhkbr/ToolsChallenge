@@ -1,5 +1,7 @@
 # API de Pagamentos
 
+SonarCloud QUALITY GATE STATUS: PASSED - View details on https://sonarcloud.io/dashboard?id=Eduhkbr_ToolsChallenge&branch=main
+
 As operações serão as seguintes:
 - Pagamento:
 - Solicitação e resposta conforme JSON abaixo
