@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -69,6 +70,7 @@ public class TransacaoServiceImplTest {
     }
 
     @Test
+    @WithMockUser(username = "test")
     public void testBuscarEstornoPorId() {
         Transacao transacao = getTransacao();
         when(repository.findById(1L)).thenReturn(Optional.of(transacao));
