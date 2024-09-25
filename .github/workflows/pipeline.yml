@@ -2,7 +2,7 @@ name: pipeline
 
 on:
   push:
-  
+
 jobs:
   analyze:
     name: CodeQL
@@ -20,7 +20,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v3
       with:
@@ -28,9 +27,10 @@ jobs:
 
     - name: Autobuild
       uses: github/codeql-action/autobuild@v3
+
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
-      
+
   unit-test:
     runs-on: ubuntu-latest
     
@@ -39,14 +39,27 @@ jobs:
       with:
         fetch-depth: 0
       
-    - run: mvn test  
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4.4.0
+      with:
+        java-version: 21
+        distribution: 'temurin'
+    
+    - name: Verify JAVA_HOME
+      run: echo "JAVA_HOME is set to $JAVA_HOME"
+
+    - name: Run Maven Tests
+      run: mvn test
+
     - name: Generate JaCoCo Badge
       id: jacoco
       uses: cicirello/jacoco-badge-generator@v2.11.0
+
     - name: Log coverage percentage
       run: |
         echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
-        echo "branch coverage = ${{ steps.jacoco.outputs.branches }}"    
+        echo "branch coverage = ${{ steps.jacoco.outputs.branches }}"
+
     - name: Upload JaCoCo coverage report
       uses: actions/upload-artifact@v4
       with:
@@ -63,14 +76,10 @@ jobs:
         fetch-depth: 0
         
     - name: Set up JDK 21
-      
       uses: actions/setup-java@v4.4.0
       with:
         java-version: 21
         distribution: 'temurin'
-
-    - name: Verify JAVA_HOME
-      run: echo "JAVA_HOME is set to $JAVA_HOME"
 
     - name: Build Project
       run: mvn clean package
@@ -93,7 +102,6 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_IMPACTA }}
-      # run: mvn clean package -f pom.xml -B -V -e -X -Dfindbugs.skip -Dcheckstyle.skip -Dpmd.skip=true -Dspotbugs.skip -Denforcer.skip -Dmaven.javadoc.skip -DskipTests -Dmaven.test.skip.exec -Dlicense.skip=true -Drat.skip=true -Dspotless.check.skip=true
       run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=toolschallenge -Dsonar.qualitygate.wait=true
 
   build:
@@ -106,7 +114,7 @@ jobs:
     
     - name: Package
       run: mvn package  
-   
+
   deploy-STG:
     runs-on: ubuntu-latest
     needs: build
@@ -191,4 +199,4 @@ jobs:
       - name: Deploy 
         shell: bash
         run: |
-          echo "Deploy PROD" 
+          echo "Deploy PROD"
